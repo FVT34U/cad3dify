@@ -2,6 +2,10 @@
 
 Using GPT-5 (or Claude 4.5 opus, Gemini 3 pro, Llama 3.2 on Vertex AI), generate a 3D CAD model (STEP file) from a 2D CAD image.
 
+> [!NOTE]
+> We developed an agent-based version of this project called [agent3dify](https://github.com/neka-nat/agent3dify).
+> You can use it instead of this project.
+
 ## Getting started
 
 Installation.

@@ -1,2 +1,6 @@
 __pycache__
 .env
+
+input_images/
+output/
+logs/*

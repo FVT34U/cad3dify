@@ -32,6 +32,7 @@ streamlit run scripts/app.py
 streamlit run scripts/app.py -- --model_type claude  # Use Claude 4.5 sonnet
 streamlit run scripts/app.py -- --model_type gemini  # Use Gemini 3.0 pro preview
 streamlit run scripts/app.py -- --model_type llama  # Use Llama 3.2 on Vertex AI
+streamlit run scripts/app.py -- --model_type local  # Use your local model
 ```
 
 ## Architecture

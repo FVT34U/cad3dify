@@ -2,6 +2,7 @@ import tempfile
 from string import Template
 
 from loguru import logger
+import os
 
 from .agents import execute_python_code
 from .chat_models import MODEL_TYPE
@@ -39,6 +40,15 @@ def generate_step_from_2d_cad_image(
 
     result = chain.invoke(image_data)["result"]
     code = Template(result).substitute(output_filename=output_filepath)
+    os.makedirs("logs", exist_ok=True)
+    logger.add(
+        "logs/app.log",
+        rotation="10 MB",
+        retention="365 days",
+        compression="zip",
+        level="DEBUG",
+        encoding="utf-8",
+    )
     logger.info("1st code generation complete. Running code...")
     logger.debug("Generated 1st code:")
     logger.debug(code)

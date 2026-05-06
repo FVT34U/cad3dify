@@ -1,8 +1,7 @@
 from typing import Literal
-
+import os
 try:
     import os
-
     import vertexai
     vertexai.init(project=os.environ["VERTEXAI_PROJECT"], location=os.environ["VERTEXAI_LOCATION"])
 except KeyError:
@@ -15,9 +14,8 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_openai import ChatOpenAI
 from pydantic import BaseModel
 
-MODEL_TYPE = Literal["gpt", "claude", "gemini", "llama"]
-PROVIDER_TYPE = Literal["openai", "anthropic", "google", "vertex_ai"]
-
+MODEL_TYPE = Literal["gpt", "claude", "gemini", "llama", "local"]
+PROVIDER_TYPE = Literal["openai", "anthropic", "google", "vertex_ai", "local"]
 
 class ChatModelParameters(BaseModel):
     provider: PROVIDER_TYPE
@@ -64,6 +62,12 @@ class ChatModelParameters(BaseModel):
                 model_name="meta/llama-3.2-90b-vision-instruct-maas",
                 temperature=temperature,
             ),
+            "local": cls(
+                provider="local",
+                model_name=os.environ.get("MODEL_NAME", "Qwen/Qwen3-VL-8B-Instruct"),
+                temperature=temperature,
+                max_tokens=18000,
+            ),
         }
         return model_type_to_parameters.get(model_type, cls.default())
 
@@ -91,12 +95,19 @@ class ChatModelParameters(BaseModel):
             from langchain_google_vertexai.model_garden_maas.llama import (
                 VertexModelGardenLlama,
             )
-
             credentials, _ = default(scopes=["https://www.googleapis.com/auth/cloud-platform"])
             return VertexModelGardenLlama(
                 model_name=self.model_name,
                 temperature=self.temperature,
                 credentials=credentials,
+            )
+        elif self.provider == "local":
+            return ChatOpenAI(
+                model=self.model_name,
+                base_url=os.environ.get("LOCAL_LLM_URL", "http://localhost:8000/v1"),
+                api_key="EMPTY",
+                temperature=self.temperature,
+                max_tokens=self.max_tokens,
             )
         else:
             raise ValueError(f"provider {self.provider} is not supported.")
